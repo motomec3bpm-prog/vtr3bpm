@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c0242c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VTR 3º BPM">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>VTR 3º BPM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root { --bg: #ffffff; --ink: #17223a; --muted: #5b6780; --red: #c0242c; --blue: #2445b3; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .faixa { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); background: var(--red); z-index: 3; }
+  iframe { position: fixed; left: 0; right: 0; top: env(safe-area-inset-top, 0px); bottom: 0;
+    width: 100%; height: calc(100% - env(safe-area-inset-top, 0px)); border: 0; background: var(--bg); }
+  #abertura { position: fixed; inset: 0; z-index: 2; background: var(--bg); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px; padding: 16px; text-align: center; transition: opacity .3s; }
+  #abertura img { width: 110px; height: auto; }
+  #abertura h1 { margin: 0; font-size: 22px; letter-spacing: .02em; text-transform: uppercase; }
+  #abertura p { margin: 0; color: var(--muted); font-size: 14px; }
+  #abertura.sumir { opacity: 0; pointer-events: none; }
+  #direto { display: inline-block; margin-top: 6px; padding: 12px 18px; border-radius: 8px; background: var(--blue);
+    color: #fff; text-decoration: none; font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) { #abertura { transition: none; } }
+</style>
+</head>
+<body>
+<div class="faixa"></div>
+<div id="abertura">
+  <img src="brasao.png" alt="Brasão do 3º BPM">
+  <h1>Controle de Viaturas</h1>
+  <p>3º BPM · Batalhão Tapajós</p>
+  <p id="status">Carregando…</p>
+  <a id="direto" href="" hidden>Abrir o app direto</a>
+</div>
+<iframe id="app" title="Controle de Viaturas 3º BPM" allow="clipboard-write; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<script>
+  // Link do app (Google Apps Script). Se publicar uma implantação NOVA, troque aqui.
+  const APP = "https://script.google.com/macros/s/AKfycbwlOANnS3bKIP-qgpvJPh5j-RJ4JSZG4-I3nr6LfTIXoE2WjUO0HYB29PZGXdSq1Q05tg/exec";
+
+  const frame = document.getElementById("app"), abertura = document.getElementById("abertura");
+  const direto = document.getElementById("direto");
+  direto.href = APP;
+  frame.addEventListener("load", () => { abertura.classList.add("sumir"); });
+  frame.src = APP;
+  // Se a internet estiver lenta ou o app não abrir aqui dentro, oferece abrir direto.
+  setTimeout(() => {
+    if (!abertura.classList.contains("sumir")) {
+      document.getElementById("status").textContent = "Está demorando. Verifique a internet ou abra direto:";
+      direto.hidden = false;
+    }
+  }, 15000);
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
